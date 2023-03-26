@@ -7,6 +7,7 @@ def simulate():
     global flag
     label17.grid_forget()
     label18.grid_forget()
+    label19.grid_forget()
     button2.grid_forget()
 
     heaveside_active = 0
@@ -26,41 +27,80 @@ def simulate():
 
     if var1.get() ==1 :
         heaveside_active=True
+    else: 
+        heaveside_active=False
 
     if var2.get() ==1 :
         sinus_active=True
+    else:
+        sinus_active = False
 
     if var3.get() ==1 :
         rectangle_active=True
+    else:
+        rectangle_active=False
 
+    if not rectangle_active and not sinus_active and not heaveside_active:
+        label19.grid(row=7,column=2,columnspan=2)
+        return False
     try:
-        tab =[]
-        heavisde_amplitude = float(text_input1.get("1.0",'end-1c'))
-        tab.append(heavisde_amplitude)
-        sinus_amplitude = float(text_input2.get("1.0",'end-1c'))
-        tab.append(sinus_amplitude)
-        sinus_period = float(text_input3.get("1.0",'end-1c'))
-        tab.append(sinus_period)
-        rectangle_amplitude = float(text_input4.get("1.0",'end-1c'))
-        tab.append(rectangle_amplitude)
-        rectangle_period = float(text_input5.get("1.0",'end-1c'))
-        tab.append(rectangle_period)
-        rectangle_duty_cycle = float(text_input6.get("1.0",'end-1c'))/100
-        tab.append(rectangle_duty_cycle)
-        k1 = float(text_input7.get("1.0",'end-1c'))
-        tab.append(k1)
-        k2 = float(text_input8.get("1.0",'end-1c'))
-        tab.append(k2)
-        T1 = float(text_input9.get("1.0",'end-1c'))
-        tab.append(T1)
-        T2 = float(text_input10.get("1.0",'end-1c'))
-        tab.append(T2)
-        time = float(text_input11.get("1.0",'end-1c'))
-        tab.append(time)
+        if text_input1.get("1.0",tk.END) !='\n':
+            heaveside_amplitude = float(text_input1.get("1.0",tk.END))
+        else:
+            heaveside_amplitude=0
 
-        for element in tab:
-            if element<0:
-                raise ValueError
+        if text_input2.get("1.0",tk.END) !='\n':
+            sinus_amplitude = float(text_input2.get("1.0",tk.END))
+        else:
+            sinus_amplitude=0
+
+        if text_input3.get("1.0",tk.END) !='\n':
+            sinus_period = float(text_input3.get("1.0",tk.END))
+        else:
+            sinus_period=0
+        
+        if text_input4.get("1.0",tk.END) !='\n':
+            rectangle_amplitude = float(text_input4.get("1.0",tk.END))
+        else:
+            rectangle_amplitude=0
+        
+        if text_input5.get("1.0",tk.END) !='\n':
+            rectangle_period = float(text_input5.get("1.0",tk.END))
+        else:
+            rectangle_period=0
+        
+        if text_input6.get("1.0",tk.END) !='\n':
+            rectangle_duty_cycle = float(text_input6.get("1.0",tk.END))/100
+        else:
+            rectangle_duty_cycle=0
+        
+        if text_input7.get("1.0",tk.END) !='\n':
+            k1 = float(text_input7.get("1.0",tk.END))
+        else:
+            k1=0
+        
+        if text_input8.get("1.0",tk.END) !='\n':
+            k2 = float(text_input8.get("1.0",tk.END))
+        else:
+            k2=0
+        
+        if text_input9.get("1.0",tk.END) !='\n':
+            T1 = float(text_input9.get("1.0",tk.END))
+        else:
+            T1=0
+        
+        if text_input10.get("1.0",tk.END) !='\n':
+            T2 = float(text_input10.get("1.0",tk.END))
+        else:
+            T2=0
+
+        if text_input11.get("1.0",tk.END) !='\n':
+            time = float(text_input11.get("1.0",tk.END))
+        else:
+            time=0
+        
+        if (heaveside_active and heaveside_amplitude<=0) or (sinus_active and (sinus_amplitude<=0 or sinus_period<=0)) or (rectangle_active and (rectangle_amplitude<=0 or rectangle_duty_cycle<=0 or rectangle_period<=0)) or time <=0 or k1<=0 or k2<=0 or T1<=0 or T2<=0 :
+            raise ValueError
         
     except:
         label17.grid(row=7,column=2,columnspan=2)
@@ -76,19 +116,26 @@ def simulate():
 
     flag = False
 
-    print(f'Heavisde active: {heaveside_active}')
-    print(f'Heavisde amplitude: {heaveside_amplitude}')
-    print(f'Sinus active: {sinus_active}')
-    print(f'Sinus amplitude: {sinus_amplitude}')
-    print(f'Sinus period: {sinus_period}')
-    print(f'Rectangle active: {rectangle_active}')
-    print(f'Rectangle amplitude: {rectangle_amplitude}')
-    print(f'Rectangle_period: {rectangle_period}')
-    print(f'Rectangle_duty_cycle: {rectangle_duty_cycle}')
-    print(f'k1: {k1}')
-    print(f'k2: {k2}')
-    print(f'T1: {T1}')
-    print(f'T2: {T2}')
+    params = [{'type':'sinus',
+               'is_active':sinus_active,
+               'amplitude':sinus_amplitude,
+               'period':sinus_period,
+               'duty_cycle':0},
+               {
+                'type':'rectangle',
+                'is_active':rectangle_active,
+                'amplitude':rectangle_amplitude,
+                'period':rectangle_period,
+                'duty_cycle':rectangle_duty_cycle},
+               {'type':'heaviside_step',
+                'is_active':heaveside_active,
+                'amplitude':heaveside_amplitude,
+                'period':0,
+                'duty_cycle':0},
+               
+              ]
+
+    
         
 #Unstable flag
 flag = False
@@ -140,7 +187,7 @@ label6.grid(row=4,column=0,padx=10,pady=10)
 text_input2 = tk.Text(width=5,height=2)
 text_input2.grid(row=4,column=1,padx=10,pady=10)
 
-label7 = tk.Label(text='Okres [s]:',font=('Arial',12,'normal'),bg='#3f3f3f')
+label7 = tk.Label(text='Okres [ms]:',font=('Arial',12,'normal'),bg='#3f3f3f')
 label7.grid(row=5,column=0,padx=10,pady=10)
 
 text_input3 = tk.Text(width=5,height=2)
@@ -162,7 +209,7 @@ label9.grid(row=7,column=0,padx=10,pady=10)
 text_input4 = tk.Text(width=5,height=2)
 text_input4.grid(row=7,column=1,padx=10,pady=10)
 
-label10 = tk.Label(text='Okres [s]:',font=('Arial',12,'normal'),bg='#3f3f3f')
+label10 = tk.Label(text='Okres [ms]:',font=('Arial',12,'normal'),bg='#3f3f3f')
 label10.grid(row=8,column=0,padx=10,pady=10)
 
 text_input5 = tk.Text(width=5,height=2)
@@ -214,6 +261,7 @@ button1.grid(row=6,column=2,columnspan=2)
 label17 = tk.Label(text='Podano niepoprawne wartosci',font=('Arial',16,'normal'),bg='#3f3f3f',fg='red')
 
 label18 = tk.Label(text='Układ nie jest stabilny. Czy chcesz symulować? ',font=('Arial',16,'normal'),bg='#3f3f3f',fg='red')
+label19 = tk.Label(text='Nie wybrano zadnego pobudzenia ',font=('Arial',16,'normal'),bg='#3f3f3f',fg='red')
 
 button2 = tk.Button(text='Tak',highlightbackground='#3f3f3f',command=set_flag)
 
