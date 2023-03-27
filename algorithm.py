@@ -49,14 +49,14 @@ def initialize_input(type, sim_time, amplitude, period, duty_cycle):
             for b in range(round(period*(1-duty_cycle))):
                 if i*H >= sim_time:
                     break
-                u.append(0)
+                u.append((-1)*amplitude)
                 i += 1
         return u
 
     elif type == "sinus":
         i = 0
         while i * H < sim_time:
-            u.append(amplitude*math.sin(math.pi*2000*i * H/period))
+            u.append(amplitude*math.sin(math.pi*2*i*H*1000/period))
             i += 1
         return u
 
@@ -112,10 +112,12 @@ def results(results_, s_input, sim_time, inputs_):
         axis[0].set_title(keys[0])
         axis[1].plot(t, results_[keys[0]])
         axis[1].set_title(keys[0]+" output")
+        plt.tight_layout()
         plt.show()
 
     elif num_plots == 2:
         figure, axis = plt.subplots(2, 2)
+        
         axis[0,0].plot(t, inputs_[keys[0]])
         axis[0,0].set_title(keys[0])
         axis[0][1].plot(t, results_[keys[0]])
@@ -124,6 +126,7 @@ def results(results_, s_input, sim_time, inputs_):
         axis[1,0].set_title(keys[1])
         axis[1,1].plot(t, results_[keys[1]])
         axis[1,1].set_title(keys[1] + " output")
+        plt.tight_layout()
         plt.show()
 
 
@@ -142,17 +145,15 @@ def results(results_, s_input, sim_time, inputs_):
         axis[2, 0].set_title(keys[2])
         axis[2, 1].plot(t, results_[keys[2]])
         axis[2, 1].set_title(keys[2] + " output")
+        plt.tight_layout()
         plt.show()
 
 
-def algorithm(k1, k2 , T1, T2, b_input, sim_time, x_t, x_t_d):
+def algorithm(k1, k2 , T1, T2, b_input, sim_time):
+    global x_t,x_t_d
     initialize_arrays_canon(k1, k2, T1, T2)
     simulation(b_input, sim_time, x_t, x_t_d)
 
-algorithm(1, 1, 2, 1, [{'type': "sinus", 'is_active' : True, 'amplitude': 2, 'period': 10000, 'duty_cycle': 0},
-                       {'type': "rectangle", 'is_active' : True, 'amplitude': 2, 'period': 10000, 'duty_cycle': 0.8},
-                       {'type': "heaviside_step", 'is_active' : True, 'amplitude': 2, 'period': 0, 'duty_cycle': 0}
-                       ], 10, x_t, x_t_d)
 
 
 

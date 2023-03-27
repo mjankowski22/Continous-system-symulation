@@ -1,4 +1,5 @@
 import tkinter as tk
+from algorithm import algorithm
 
 
 
@@ -69,11 +70,6 @@ def simulate():
         else:
             rectangle_period=0
         
-        if text_input6.get("1.0",tk.END) !='\n':
-            rectangle_duty_cycle = float(text_input6.get("1.0",tk.END))/100
-        else:
-            rectangle_duty_cycle=0
-        
         if text_input7.get("1.0",tk.END) !='\n':
             k1 = float(text_input7.get("1.0",tk.END))
         else:
@@ -99,7 +95,7 @@ def simulate():
         else:
             time=0
         
-        if (heaveside_active and heaveside_amplitude<=0) or (sinus_active and (sinus_amplitude<=0 or sinus_period<=0)) or (rectangle_active and (rectangle_amplitude<=0 or rectangle_duty_cycle<=0 or rectangle_period<=0)) or time <=0 or k1<=0 or k2<=0 or T1<=0 or T2<=0 :
+        if (heaveside_active and heaveside_amplitude<=0) or (sinus_active and (sinus_amplitude<=0 or sinus_period<=0)) or (rectangle_active and (rectangle_amplitude<=0 or rectangle_period<=0)) or time <=0 or k1<=0 or k2<=0 or T1<=0 or T2<=0 :
             raise ValueError
         
     except:
@@ -119,22 +115,21 @@ def simulate():
     params = [{'type':'sinus',
                'is_active':sinus_active,
                'amplitude':sinus_amplitude,
-               'period':sinus_period,
+               'period':sinus_period*1000,
                'duty_cycle':0},
                {
                 'type':'rectangle',
                 'is_active':rectangle_active,
                 'amplitude':rectangle_amplitude,
-                'period':rectangle_period,
-                'duty_cycle':rectangle_duty_cycle},
+                'period':rectangle_period*1000,
+                'duty_cycle':0.5},
                {'type':'heaviside_step',
                 'is_active':heaveside_active,
                 'amplitude':heaveside_amplitude,
                 'period':0,
                 'duty_cycle':0},
-               
               ]
-
+    algorithm(k1,k2,T1,T2,params,time)
     
         
 #Unstable flag
@@ -187,7 +182,7 @@ label6.grid(row=4,column=0,padx=10,pady=10)
 text_input2 = tk.Text(width=5,height=2)
 text_input2.grid(row=4,column=1,padx=10,pady=10)
 
-label7 = tk.Label(text='Okres [ms]:',font=('Arial',12,'normal'),bg='#3f3f3f')
+label7 = tk.Label(text='Okres [s]:',font=('Arial',12,'normal'),bg='#3f3f3f')
 label7.grid(row=5,column=0,padx=10,pady=10)
 
 text_input3 = tk.Text(width=5,height=2)
@@ -209,17 +204,17 @@ label9.grid(row=7,column=0,padx=10,pady=10)
 text_input4 = tk.Text(width=5,height=2)
 text_input4.grid(row=7,column=1,padx=10,pady=10)
 
-label10 = tk.Label(text='Okres [ms]:',font=('Arial',12,'normal'),bg='#3f3f3f')
+label10 = tk.Label(text='Okres [s]:',font=('Arial',12,'normal'),bg='#3f3f3f')
 label10.grid(row=8,column=0,padx=10,pady=10)
 
 text_input5 = tk.Text(width=5,height=2)
 text_input5.grid(row=8,column=1,padx=10,pady=10)
 
 label11 = tk.Label(text='Wspolczynnik wypelnienia [%]:',font=('Arial',12,'normal'),bg='#3f3f3f')
-label11.grid(row=9,column=0,padx=10,pady=10)
+
 
 text_input6= tk.Text(width=5,height=2)
-text_input6.grid(row=9,column=1,padx=10,pady=10)
+
 
 
 #System parametrs
